@@ -27,7 +27,7 @@ class IndexController extends Yaf_Controller_Abstract {
 
         // 形成数组，按字典序排序
         $arr = [$nonce, $timeStamp, self::$token];
-        sort($arr);
+        sort($arr, SORT_STRING);
 
         // 拼接成字符串，使用 sha1 加密，然后与 signature 进行校验
         $str = sha1(implode($arr));
@@ -79,7 +79,7 @@ class IndexController extends Yaf_Controller_Abstract {
                     $content = 'test 1';
                     break;
                 case 2:
-                    $content = 'test 2';
+                    $content = '<a href="https://lichangao.com">李长傲的个人博客</a>';
                     break;
                 case 'test':
                     $content = 'this is a test';
