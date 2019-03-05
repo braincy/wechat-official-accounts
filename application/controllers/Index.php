@@ -2,7 +2,7 @@
 
 class IndexController extends Yaf_Controller_Abstract {
 
-    private static $token = 'wechat-official-accounts';
+    private static $token = 'WeChatOfficialAccounts';
 
 	public function indexAction() {
 
