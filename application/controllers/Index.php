@@ -1,34 +1,27 @@
 <?php
-/**
- * @name IndexController
- * @author root
- * @desc 默认控制器
- * @see http://www.php.net/manual/en/class.yaf-controller-abstract.php
- */
+
 class IndexController extends Yaf_Controller_Abstract {
 
-	/** 
-     * 默认动作
-     * Yaf支持直接把Yaf_Request_Abstract::getParam()得到的同名参数作为Action的形参
-     * 对于如下的例子, 当访问http://yourhost/wechat-official-accounts/index/index/index/name/root 的时候, 你就会发现不同
-     */
-	public function indexAction($name = "Stranger") {
-		//1. fetch query
-		$get = $this->getRequest()->getQuery("get", "default value");
+    private static $token = 'wechat-official-accounts';
 
-		//2. fetch model
-		$model = new SampleModel();
+	public function indexAction() {
 
-		//3. assign
-		$this->getView()->assign("content", $model->selectSample());
-		$this->getView()->assign("name", $name);
+	    // 获得参数 signature, nonce, timestamp, echostr
+        $nonce = $_GET['nonce'];
+        $timeStamp = $_GET['timestamp'];
+        $echoStr = $_GET['echostr'];
+        $signature = $_GET['signature'];
 
-		//4. render by Yaf, 如果这里返回FALSE, Yaf将不会调用自动视图引擎Render模板
-        return TRUE;
-	}
+        // 形成数组，按字典序排序
+        $arr = [$nonce, $timeStamp, self::$token];
+        sort($arr);
 
-	public function testAction() {
-		echo json_encode(['aaa'=>1, 'bbb'=>2]);
-		exit;
+        // 拼接成字符串，使用 sha1 加密，然后与 signature 进行校验
+        $str = sha1(implode($arr));
+        if ($str == $signature) {
+            exit ($echoStr);
+        }
+
+        return FALSE;
 	}
 }
