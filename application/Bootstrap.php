@@ -15,12 +15,6 @@ class Bootstrap extends Yaf_Bootstrap_Abstract {
 		Yaf_Registry::set('config', $arrConfig);
 	}
 
-	public function _initPlugin(Yaf_Dispatcher $dispatcher) {
-		//注册一个插件
-		$objSamplePlugin = new SamplePlugin();
-		$dispatcher->registerPlugin($objSamplePlugin);
-	}
-
 	public function _initRoute(Yaf_Dispatcher $dispatcher) {
 		//在这里注册自己的路由协议,默认使用简单路由
 	}
