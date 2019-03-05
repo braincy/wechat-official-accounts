@@ -4,12 +4,16 @@ class IndexController extends Yaf_Controller_Abstract {
 
     private static $token = 'WeChatOfficialAccounts';
 
+    /**
+     * 服务器配置验证接口
+     * @return bool
+     */
 	public function indexAction() {
 
 	    // 获得参数 signature, nonce, timestamp, echostr
-        $nonce = $_GET['nonce'];
+        $nonce     = $_GET['nonce'];
         $timeStamp = $_GET['timestamp'];
-        $echoStr = $_GET['echostr'];
+        $echoStr   = $_GET['echostr'];
         $signature = $_GET['signature'];
 
         // 形成数组，按字典序排序
