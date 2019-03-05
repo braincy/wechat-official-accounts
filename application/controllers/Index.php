@@ -13,6 +13,23 @@ class IndexController extends Yaf_Controller_Abstract {
           <Content><![CDATA[%s]]></Content>
         </xml>";
 
+    protected static $newsMsgTemplate =
+        "<xml>
+          <ToUserName><![CDATA[%s]]></ToUserName>
+          <FromUserName><![CDATA[%s]]></FromUserName>
+          <CreateTime>%s</CreateTime>
+          <MsgType><![CDATA[%s]]></MsgType>
+          <ArticleCount>%s</ArticleCount>
+          <Articles>
+            <item>
+              <Title><![CDATA[%s]]></Title>
+              <Description><![CDATA[%s]]></Description>
+              <PicUrl><![CDATA[%s]]></PicUrl>
+              <Url><![CDATA[%s]]></Url>
+            </item>
+          </Articles>
+        </xml>";
+
     /**
      * 服务器配置验证接口
      * @return bool
@@ -84,6 +101,18 @@ class IndexController extends Yaf_Controller_Abstract {
                 case 'test':
                     $content = 'this is a test';
                     break;
+                case '图文':
+                    $toUser     = $postArr->FromUserName;
+                    $fromUser   = $postArr->ToUserName;
+                    $createTime = time();
+                    $msgType    = 'news';
+                    $response   = sprintf(
+                        self::$newsMsgTemplate, $toUser, $fromUser, $createTime, $msgType, 1,
+                        '李长傲的个人博客', '种一棵树最好的时间是在十年前，其次是现在。',
+                        'https://cdn.lichangao.com/wp-content/uploads/2019/02/avatar.jpeg',
+                        'https://lichangao.com'
+                    );
+                    exit($response);
             }
 
             if (isset($content)) {
