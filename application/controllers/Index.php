@@ -17,13 +17,13 @@ class IndexController extends Yaf_Controller_Abstract {
      * 服务器配置验证接口
      * @return bool
      */
-	public function indexAction() {
+    public function indexAction() {
 
-	    // 获得参数 signature, nonce, timestamp, echostr
-        $nonce     = $_GET['nonce'];
-        $timeStamp = $_GET['timestamp'];
-        $echoStr   = $_GET['echostr'];
-        $signature = $_GET['signature'];
+        // 获得参数 signature, nonce, timestamp, echostr
+        $nonce     = $_GET['nonce'] ?? '';
+        $timeStamp = $_GET['timestamp'] ?? '';
+        $echoStr   = $_GET['echostr'] ?? '';
+        $signature = $_GET['signature'] ?? '';
 
         // 形成数组，按字典序排序
         $arr = [$nonce, $timeStamp, self::$token];
@@ -33,14 +33,14 @@ class IndexController extends Yaf_Controller_Abstract {
         $str = sha1(implode($arr));
         if ($str == $signature) {
             if ($echoStr) { // 第一次接入微信 API
-                exit ($echoStr);
+                exit($echoStr);
             } else {
                 $this->responseMsgAction();
             }
-        }
-
-        return FALSE;
-	}
+		} else {
+		    exit('');
+		}
+    }
 
     /**
      * 消息回复接口
@@ -57,6 +57,7 @@ class IndexController extends Yaf_Controller_Abstract {
 
         // 判断该数据包是否是订阅的事件推送
         if ($postArr->MsgType == 'event') {
+
             // 如果是关注 subscribe 事件
             if ($postArr->Event == 'subscribe') {
                 // 回复用户消息
@@ -70,8 +71,35 @@ class IndexController extends Yaf_Controller_Abstract {
                 );
                 exit($response);
             }
-        }
+        } elseif ($postArr->MsgType == 'text') {
 
-        return FALSE;
+            // 关键词自动回复
+            switch (trim($postArr->Content)) {
+                case 1:
+                    $content = 'test 1';
+                    break;
+                case 2:
+                    $content = 'test 2';
+                    break;
+                case 'test':
+                    $content = 'this is a test';
+                    break;
+            }
+
+            if (isset($content)) {
+                $toUser     = $postArr->FromUserName;
+                $fromUser   = $postArr->ToUserName;
+                $createTime = time();
+                $msgType    = 'text';
+                $response   = sprintf(
+                    self::$textMsgTemplate, $toUser, $fromUser, $createTime, $msgType, $content
+                );
+                exit($response);
+            }
+		}
+
+		if (!isset($response)) {
+			exit('');
+		}
     }
 }
