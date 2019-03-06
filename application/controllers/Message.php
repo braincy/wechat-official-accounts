@@ -32,15 +32,12 @@ class IndexController extends Yaf_Controller_Abstract {
 
     /**
      * 服务器配置验证接口
+     * @param $nonce
+     * @param $timeStamp
+     * @param $signature
      * @return bool
      */
-    public function indexAction() {
-
-        // 获得参数 signature, nonce, timestamp, echostr
-        $nonce     = $_GET['nonce'] ?? '';
-        $timeStamp = $_GET['timestamp'] ?? '';
-        $echoStr   = $_GET['echostr'] ?? '';
-        $signature = $_GET['signature'] ?? '';
+    private function checkSignature($nonce, $timeStamp, $signature) {
 
         // 形成数组，按字典序排序
         $arr = [$nonce, $timeStamp, self::$token];
@@ -48,23 +45,29 @@ class IndexController extends Yaf_Controller_Abstract {
 
         // 拼接成字符串，使用 sha1 加密，然后与 signature 进行校验
         $str = sha1(implode($arr));
-        if ($str == $signature) {
-            if ($echoStr) { // 第一次接入微信 API
-                exit($echoStr);
-            } else {
-                $this->responseMsgAction();
-            }
-		} else {
-		    exit('');
-		}
+
+        return $str == $signature;
     }
 
     /**
      * 消息回复接口
      * 参考：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140453
-     * @return bool
      */
     public function responseMsgAction() {
+
+        // 获得参数 signature, nonce, timestamp, echostr
+        $nonce     = $_GET['nonce'] ?? '';
+        $timeStamp = $_GET['timestamp'] ?? '';
+        $echoStr   = $_GET['echostr'] ?? '';
+        $signature = $_GET['signature'] ?? '';
+
+        if (!$this->checkSignature($nonce, $timeStamp, $signature)) {
+            exit('');
+        }
+
+        if ($echoStr) { // 第一次接入微信 API
+            exit($echoStr);
+        }
 
         // 获取到微信推送过来的 POST 数据（XML 格式）
         $postArr = file_get_contents('php://input');
