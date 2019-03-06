@@ -1,6 +1,6 @@
 <?php
 
-class IndexController extends Yaf_Controller_Abstract {
+class MessageController extends Yaf_Controller_Abstract {
 
     private static $token = 'WeChatOfficialAccounts';
 
